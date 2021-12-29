@@ -132,17 +132,20 @@ cat > ${instance}-csr.json <<EOF
 }
 EOF
 
+# Find a way to get IP addresses of remote hosts in a loop and implement below
 EXTERNAL_IP=$(gcloud compute instances describe ${instance} \
   --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
 
-INTERNAL_IP=$(gcloud compute instances describe ${instance} \
-  --format 'value(networkInterfaces[0].networkIP)')
+# Can probably be removed for on prem installation
+# INTERNAL_IP=$(gcloud compute instances describe ${instance} \
+#   --format 'value(networkInterfaces[0].networkIP)')
 
+# Removed INTERNAL_IP
 cfssl gencert \
   -ca=ca.pem \
   -ca-key=ca-key.pem \
   -config=ca-config.json \
-  -hostname=${instance},${EXTERNAL_IP},${INTERNAL_IP} \
+  -hostname=${instance},${EXTERNAL_IP} \
   -profile=kubernetes \
   ${instance}-csr.json | cfssljson -bare ${instance}
 done
@@ -299,6 +302,7 @@ Generate the Kubernetes API Server certificate and private key:
 ```
 {
 
+# Find a way to get IP address of first master node remotely and implement below
 KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
   --region $(gcloud config get-value compute/region) \
   --format 'value(address)')
@@ -395,16 +399,18 @@ service-account.pem
 Copy the appropriate certificates and private keys to each worker instance:
 
 ```
+# Adjusted script for on prem use
 for instance in worker-0 worker-1 worker-2; do
-  gcloud compute scp ca.pem ${instance}-key.pem ${instance}.pem ${instance}:~/
+  scp ca.pem ${instance}-key.pem ${instance}.pem ${instance}:~/
 done
 ```
 
 Copy the appropriate certificates and private keys to each controller instance:
 
 ```
+# Adjusted script for on prem use
 for instance in controller-0 controller-1 controller-2; do
-  gcloud compute scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
+  scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
     service-account-key.pem service-account.pem ${instance}:~/
 done
 ```
