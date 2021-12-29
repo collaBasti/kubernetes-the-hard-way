@@ -13,6 +13,7 @@ Each kubeconfig requires a Kubernetes API Server to connect to. To support high 
 Retrieve the `kubernetes-the-hard-way` static IP address:
 
 ```
+# Find a way to get IP address of remote host (first master node) and implement below
 KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
   --region $(gcloud config get-value compute/region) \
   --format 'value(address)')
@@ -198,16 +199,18 @@ admin.kubeconfig
 Copy the appropriate `kubelet` and `kube-proxy` kubeconfig files to each worker instance:
 
 ```
+# Adjusted script for on prem use
 for instance in worker-0 worker-1 worker-2; do
-  gcloud compute scp ${instance}.kubeconfig kube-proxy.kubeconfig ${instance}:~/
+  scp ${instance}.kubeconfig kube-proxy.kubeconfig ${instance}:~/
 done
 ```
 
 Copy the appropriate `kube-controller-manager` and `kube-scheduler` kubeconfig files to each controller instance:
 
 ```
+# Adjusted script for on prem use
 for instance in controller-0 controller-1 controller-2; do
-  gcloud compute scp admin.kubeconfig kube-controller-manager.kubeconfig kube-scheduler.kubeconfig ${instance}:~/
+  scp admin.kubeconfig kube-controller-manager.kubeconfig kube-scheduler.kubeconfig ${instance}:~/
 done
 ```
 
