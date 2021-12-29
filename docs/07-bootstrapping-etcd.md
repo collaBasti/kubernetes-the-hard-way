@@ -61,6 +61,7 @@ ETCD_NAME=$(hostname -s)
 Create the `etcd.service` systemd unit file:
 
 ```
+# Remember to adjust hostnames and IP addresses for etcd-cluster; maybe put in placeholders for better readability
 cat <<EOF | sudo tee /etc/systemd/system/etcd.service
 [Unit]
 Description=etcd
